@@ -1,0 +1,34 @@
+name: Update PAC from upstream
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  update-pac:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update PAC and patch local port
+        run: bash scripts/update-pac.sh
+
+      - name: Commit changes
+        run: |
+          if git diff --quiet -- proxy.pac; then
+            echo "No PAC changes."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add proxy.pac
+          git commit -m "chore: update PAC from upstream"
+          git push
