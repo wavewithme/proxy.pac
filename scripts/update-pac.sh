@@ -11,15 +11,20 @@ trap 'rm -f "$tmp"' EXIT
 
 curl --fail --silent --show-error --location "$UPSTREAM_URL" --output "$tmp"
 
-if ! grep -qF "$UPSTREAM_PROXY" "$tmp"; then
-  echo "Upstream PAC no longer contains $UPSTREAM_PROXY; refusing to overwrite $TARGET."
+if ! grep -Eq '127\.0\.0\.1:1080([^0-9]|$)' "$tmp"; then
+  echo "Upstream PAC no longer contains an exact $UPSTREAM_PROXY endpoint; refusing to overwrite $TARGET."
   exit 1
 fi
 
-sed "s/127\\.0\\.0\\.1:1080/127.0.0.1:10808/g" "$tmp" > "$TARGET"
+perl -pe 's/127\.0\.0\.1:1080(?![0-9])/127.0.0.1:10808/g' "$tmp" > "$TARGET"
 
-if grep -qF "$UPSTREAM_PROXY" "$TARGET"; then
+if grep -Eq '127\.0\.0\.1:1080([^0-9]|$)' "$TARGET"; then
   echo "Port replacement failed; refusing to continue."
+  exit 1
+fi
+
+if ! grep -Eq '127\.0\.0\.1:10808([^0-9]|$)' "$TARGET"; then
+  echo "Patched PAC does not contain the expected $LOCAL_PROXY endpoint; refusing to continue."
   exit 1
 fi
 
