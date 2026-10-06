@@ -759,7 +759,7 @@ function FindProxyForURL(url, host) {
           'redirector.googlevideo.com'
           ];
   if (fbtw.indexOf(shost) !== -1) {
-    return "HTTP 127.0.0.1:1080; SOCKS5 127.0.0.1:1080; PROXY 127.0.0.1:1080; DIRECT";
+    return "HTTP 127.0.0.1:10808; SOCKS5 127.0.0.1:10808; PROXY 127.0.0.1:10808; DIRECT";
   }
 
   var curdomain = shost.match(/(.*)\.([^.]+$)/);
@@ -793,7 +793,7 @@ function FindProxyForURL(url, host) {
     if (isInNet(oip, special[i][0], special[i][1])) {rip = 1; break;}
   }
   if (yip === 1 || rip === 1 || curarr.indexOf(curhost) !== -1) {
-    return "HTTP 127.0.0.1:1080; SOCKS5 127.0.0.1:1080; PROXY 127.0.0.1:1080; DIRECT";
+    return "HTTP 127.0.0.1:10808; SOCKS5 127.0.0.1:10808; PROXY 127.0.0.1:10808; DIRECT";
   }
 
   return "DIRECT";
